@@ -1,37 +1,42 @@
 require 'rubygems'
 require 'nokogiri'   
-require 'open-uri' # If the webpage is live on a remote site 
+require 'open-uri' 
 
-page = Nokogiri::HTML(open("http://ruby.bastardsbook.com/files/hello-webpage.html")) 
+# On crée une méthode qui récupère tous les liens des mairies
 
-# Pour récupérer les titre
+def get_all_the_urls_of_val_doise_townhalls
 
-puts page.css("title")[0].name
+# On initialise une variable globale ($) array, dans laquelle on stockera les bouts de lien
+  $result =[]
+  page_townhal = Nokogiri::HTML(open("http://annuaire-des-mairies.com/val-d-oise.html")) 
 
-puts page.css("title")[0].text
+  links = page_townhal.css('a[href*="95"]')
+  i = 0
 
-# Pour récupérer les links
+# Je crée un tableau qui stocke tous mes fins d'URL pour chaque ville, sous format ./95/nom-ville
 
-links = page.css("a")
+  while i < links.size 
+  $result << links[i]["href"]
+  i+=1
+  end
+end
 
-puts links.length
-puts links[0].text
-puts links[0]["href"]
+# On crée une Méthode qui récupère l'adresse email d'un tableau de mairues à partir de l'URL d'une mairie
 
-# Using select for a collection
+def get_the_email_of_a_townhal_from_its_webpage(result)
+	result.each do |result|
+# Comment on a récupéré des ./95/nom-ville > on supprime le premier élément du string pour enlever le .
+# On supprime le premier 		
+	result[0]=""
+ 	page_mairie = Nokogiri::HTML(open("http://www.annuaire-des-mairies.com"+result)) 
+ 
+# On récupère les adresses mail
+  puts link = page_mairie.css('p:contains("@")').text
+end
+  end
 
-# Data category = un indicateur dans la balise
-news_links = page.css("a[data-category=news]")
-news_links.each{|link| puts link['href']}
+# On fait tourner nos deux méthodes. Le lien est créé grâce au $ de la variable result
+get_all_the_urls_of_val_doise_townhalls
+get_the_email_of_a_townhal_from_its_webpage($result)
 
-
-news_links2 = page.css("div#references a")
-news_links2.each{|link| puts "#{link.text}\t#{link['href']}"}    
-
-# XPath : doc.xpath("//h3/a") > Find all "a" tags with a parent tag whose name is "h3"
-# / indicates the root of the tree
-# Pour spécifier : //h3[@class = "r"]/a[@class = "l"]
-# h3.r > h3 that contains r (et pas exactement r)
-# On peut réécrire comme ça : doc.css('h3.r > a.l')
-
-# Clic droit > Copy > Copy XPath
+# Enregistrer les URLs dans un hash > TODO
