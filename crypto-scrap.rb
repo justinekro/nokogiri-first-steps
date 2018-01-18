@@ -12,8 +12,7 @@ def get_crypto_prices
 
   page_coin = Nokogiri::HTML(open("https://coinmarketcap.com/all/views/all/"))
 
-  names = page_coin.css('a[class="currency-name-container"]').map{|id| id.text.downcase.gsub(" ","-")}
-
+  names = page_coin.css('a[class="currency-name-container"]').map{|id| id.text.downcase}
   names.each {|result|
   tests = page_coin.xpath('//*[@id="id-' + result + '"]/td[5]/a').text
 
